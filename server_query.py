@@ -9,7 +9,12 @@ net = cv2.dnn.readNet("yolov3.weights", "yolov3.cfg")  # YOLOの重みと設定�
 with open("coco.names", "r") as f:
     classes = [line.strip() for line in f.readlines()]  # クラス名を読み込む
 layer_names = net.getLayerNames()  # YOLOの全レイヤーの名前を取得
-output_layers = [layer_names[i[0] - 1] for i in net.getUnconnectedOutLayers()]  # 出力レイヤーの名前を取得
+
+try:
+    output_layers = [layer_names[i - 1] for i in net.getUnconnectedOutLayers().flatten()]  # 出力レイヤーの名前を取得
+except AttributeError:
+    # getUnconnectedOutLayersがスカラー値を返す場合に対処
+    output_layers = [layer_names[net.getUnconnectedOutLayers() - 1]]
 
 @app.route('/detect', methods=['POST'])  # /detectエンドポイントを定義し、POSTメソッドでアクセス可能に
 def detect():
