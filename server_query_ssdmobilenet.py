@@ -37,7 +37,7 @@ def detect_objects(img):
             result.append({
                 'label': label,  # ラベル名
                 'confidence': float(confidence),  # 信頼度
-                'bbox': [x, y, x2, y2]  # バウンディングボックスの座標
+                'bbox': [int(x), int(y), int(x2), int(y2)]  # バウンディングボックスの座標
             })
 
     return result  # 検出結果を返す
