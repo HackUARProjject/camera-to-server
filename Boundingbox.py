@@ -10,7 +10,7 @@ image = cv2.imread(image_path)
 
 # バウンディングボックスの色と太さを定義
 bbox_color = (0, 255, 0)  
-bbox_thickness = 40
+bbox_thickness = 20
 
 # バウンディングボックスを描画
 height, width, _ = image.shape
@@ -28,21 +28,9 @@ font_thickness = 5
 # 画像に時刻のテキストを描画
 cv2.putText(image, current_time, (30, 100), font, font_scale, font_color, font_thickness, cv2.LINE_AA)
 
-#右下のアクションボタンの表示
-bottom_text = "アクションボタンを押して検索を開始"
-bottom_font_scale = 1.5
-bottom_font_thickness = 2
-
-# テキストのサイズを取得
-(text_width, text_height), baseline = cv2.getTextSize(bottom_text, font, bottom_font_scale, bottom_font_thickness)
-
-# 右下のテキスト位置を計算
-bottom_text_position = (width - text_width - 30, height - 20)
-
-# 画像に下部のテキストを描画
-cv2.putText(image, bottom_text, bottom_text_position, font, bottom_font_scale, font_color, bottom_font_thickness, cv2.LINE_AA)
-
-# 画像を表示
-cv2.imshow('Image with Bounding Box and Time', image)
+# ウィンドウサイズを設定して画像を表示
+cv2.namedWindow('Image with Bounding Box, Time, and Description', cv2.WINDOW_NORMAL)
+cv2.resizeWindow('Image with Bounding Box, Time, and Description', 800, 600)  # ウィンドウサイズを800x600に設定
+cv2.imshow('Image with Bounding Box, Time, and Description', image)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
