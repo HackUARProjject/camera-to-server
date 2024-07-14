@@ -1,6 +1,6 @@
 import openai
 
-openai.api_key = 'sk-proj-0xQyFvxZsCeINX3JrYomT3BlbkFJ9WJKUetKzZXmUW1Uyhhk'  # ここにAPIキーを直接設定
+openai.api_key = 'ここにキーをいれてね'  # ここにAPIキーを直接設定
 
 # サンプルラベル名
 label = "person"
