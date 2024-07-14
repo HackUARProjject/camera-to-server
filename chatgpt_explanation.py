@@ -5,7 +5,6 @@ openai.api_key = 'ここにキーをいれてね'  # ここにAPIキーを直接
 # サンプルラベル名
 label = "person"
 
-# 説明文を取得する関数
 def get_descriptions(label):
     descriptions = {}
     try:
