@@ -36,7 +36,7 @@ description_text = descriptions.get(label, "")
 
 #cv2が日本語対応ではないので、日本語にするための処理
 def putText_japanese(img, text, point, size, color):
-    #Raspberry Pi OSで実行する場合'/usr/share/fonts/opentype/NotoSansCJK-Bold.ttc'からフォントを指定してください
+    #Raspberry Pi OSで実行する場合'/usr/share/fonts/opentype/NotoSansCJK-Bold.ttc'からパスを指定してください
     #windows11でNotoSansCJK-BOLD.ttcを使用する場合こちらから"https://github.com/notofonts/noto-cjk/blob/main/Sans/OTC/NotoSansCJK-Bold.ttc"ダウンロードしてください(--;)
     font = ImageFont.truetype('C:/Users/tokag/AppData/Local/Microsoft/Windows/Fonts/NotoSansCJK-Bold.ttc', size)
     
