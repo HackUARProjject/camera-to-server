@@ -5,7 +5,7 @@ from datetime import datetime
 from PIL import ImageFont, ImageDraw, Image
 
 # OpenAI APIキーの設定
-openai.api_key = 'sk-proj-0xQyFvxZsCeINX3JrYomT3BlbkFJ9WJKUetKzZXmUW1Uyhhk'
+openai.api_key = 'ここにapi keyをいれてね^^'
 
 # サンプルラベル名
 label = "person"
