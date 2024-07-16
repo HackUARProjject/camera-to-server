@@ -1,0 +1,12 @@
+requests == 2.32.0
+openai == 0.28.1
+opencv-python == 4.10.0.84
+numpy == 1.26.4
+flask == 3.0.3
+torch == 2.2.2
+opencv-python-headless == 4.10.0.84
+opencv-contrib-python == 4.10.0.84
+pandas == 2.2.2
+pillow == 10.4.0
+ultralytics == 8.2.58
+gitpython == 3.1.30
