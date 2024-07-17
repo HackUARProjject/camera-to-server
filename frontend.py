@@ -8,7 +8,7 @@ from PIL import ImageFont, ImageDraw, Image
 labels = ""
 
 # OpenAI APIキーの設定　あんまり使わないでね
-openai.api_key = 'sk-None-OAfrPPG4AMl5r1boMDKWT3BlbkFJf4VEdzaoYukXHlQvZUHw'
+openai.api_key = ''
 
 def capture_frame():
     cap = cv2.VideoCapture(0)  # カメラのIDが0の場合、カメラを開く
