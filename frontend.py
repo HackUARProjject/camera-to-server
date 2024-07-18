@@ -2,8 +2,12 @@ import requests  # HTTPリクエストを送るためのライブラリをイン
 import openai
 import cv2
 import numpy as np
+import keyboard
+import time
+import asyncio
 from datetime import datetime
 from PIL import ImageFont, ImageDraw, Image
+
 
 labels = ""
 
@@ -86,71 +90,102 @@ def putText_japanese(img, text, point, size, color):
     #PILからndarrayに変換して返す
     return np.array(img_pil)
 
+def view_result_img():
+    image_path = "black.png"
+    image = cv2.imread(image_path)
+    
+    if not labels:
+        text = "物体が検出されませんでした"
+        image = putText_japanese(image, text, (image.shape[1]//2 - 300, image.shape[0]//2), 50, (0, 255, 0))
+    else:
+        label = labels[0]['label']
+        descriptions = get_descriptions(label)
+        description_text = descriptions.get(label, "")
+
+        bbox_color = (0, 255, 0)
+        bbox_thickness = 25
+        height, width, _ = image.shape
+        cv2.rectangle(image, (0, 0), (width, height - 80), bbox_color, bbox_thickness)
+
+        char_num = 10
+        lines = [description_text[i:i+char_num] for i in range(0, len(description_text), char_num)]
+        for i, line in enumerate(lines):
+            description_position = (1350, 300 + 300 * (0.25 * i))
+            image = putText_japanese(image, line, description_position, 50, (0, 255, 0))
+
+    current_time = datetime.now().strftime('%H:%M')
+    cv2.putText(image, current_time, (30, 100), cv2.FONT_HERSHEY_SIMPLEX, 4, (0, 255, 0), 5, cv2.LINE_AA)
+    
+    cv2.imshow('image', image)
+    cv2.waitKey(5000)  # 5秒間表示
+
+def idle_screen():
+    image_path = "black.png"
+    image = cv2.imread(image_path)
+
+    current_time = datetime.now().strftime('%H:%M')
+
+    # 時刻のテキストを描画
+    cv2.putText(image, current_time, (30, 100), cv2.FONT_HERSHEY_SIMPLEX, 4, (0, 255, 0), 5, cv2.LINE_AA)
+
+    # アクションボタンの表示
+    bbox_color = (0, 255, 0)  
+    bbox_thickness = 25
+    height, width, _ = image.shape
+    cv2.rectangle(image, (0, 0), (width, height - 80), bbox_color, bbox_thickness) 
+    # アクションボタンの表示
+    bottom_text = "1キーを押して検索を開始"
+    bottom_text_position = (1400, image.shape[0] - 60)
+    image = putText_japanese(image, bottom_text, bottom_text_position, 30, (0, 255, 0))
+
+    return image
+
+
 def main():
     frame = capture_frame()  # フレームをキャプチャ
 
     if frame is not None:
         send_frame_to_server(frame)  # フレームをサーバーに送信
+        print("done")
 
+def countdown(num):
+    for i in range(num, -1, -1):
+        image_path = "black.png"
+        image = cv2.imread(image_path)
+        
+        if i == 0:
+            text = "しばらくお待ちください"
+            image = putText_japanese(image, text, (image.shape[1]//2 - 300, image.shape[0]//2), 50, (0, 255, 0))
+        else:
+            text = str(i)
+            textsize = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 7, 10)[0]
+            text_x = (image.shape[1] - textsize[0]) // 2
+            text_y = (image.shape[0] + textsize[1]) // 2
+            cv2.putText(image, text, (text_x, text_y), cv2.FONT_HERSHEY_SIMPLEX, 7, (0, 255, 0), 10, cv2.LINE_AA)
+
+        cv2.imshow('image', image)
+        cv2.waitKey(1000)
+        
+
+def main_loop():
+    cv2.namedWindow('image', cv2.WND_PROP_FULLSCREEN)
+    cv2.setWindowProperty('image', cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+
+    while True:
+        image = idle_screen()
+        cv2.imshow('image', image)
+
+        key = cv2.waitKey(1) & 0xFF
+        if key == ord('1'): 
+            countdown(3)
+            main() # 既存のmain関数を呼び出し
+            view_result_img()  # 結果を表示
+            time.sleep(5)  # 結果表示後、5秒待機
+
+        elif key == 27:  # ESCキーでプログラム終了
+            break
+
+    cv2.destroyAllWindows()
 
 if __name__ == "__main__":
-    main()
-    # 画像を読み込む
-    image_path = "black.png"
-    label = labels[0]['label']
-    descriptions = get_descriptions(label)
-    # print(descriptions)
-    description_text = descriptions.get(label, "")
-    image = cv2.imread(image_path)
-
-    # バウンディングボックスの色と太さを定義
-    bbox_color = (0, 255, 0)  
-    bbox_thickness = 25
-
-    # バウンディングボックスを描画
-    height, width, _ = image.shape
-    cv2.rectangle(image, (0, 0), (width, height - 80), bbox_color, bbox_thickness)  # 高さを少し減らして下にスペースを作る
-    
-
-    # 現在の時刻を取得する
-    current_time = datetime.now().strftime('%H:%M')
-
-    # 時刻のテキストのフォント、サイズ、色を定義
-    font = cv2.FONT_HERSHEY_SIMPLEX
-    font_scale = 4
-    font_color = bbox_color 
-    font_thickness = 5
-
-    # 画像に時刻のテキストを描画
-    cv2.putText(image, current_time, (30, 100), font, font_scale, font_color, font_thickness, cv2.LINE_AA)
-
-    # 右下のアクションボタンの表示
-    bottom_text = "アクションボタンを押して検索を開始"
-
-    #アクションボタンの位置を調整(x座標, y座標)
-    bottom_text_position = (1400, image.shape[0] - 60) 
-
-
-    #日本語に対応させる
-    image = putText_japanese(image, bottom_text, bottom_text_position, 30, (0, 255, 0))
-
-    #画面文字の改行文字数を変えたい場合ここを変える
-    char_num = 10
-
-    if len(description_text) % char_num == 0:
-        for i in range(len(description_text) // char_num):
-            description_position = (1350, 300 + 300 * (0.25 * i))
-            image = putText_japanese(image, description_text[i * char_num:char_num * (i + 1)], description_position, 50, (0, 255, 0))
-    else:
-        for i in range((len(description_text) // char_num) + 1):
-            description_position = (1350, 300 + 300 * (0.25 * i))
-            image = putText_japanese(image, description_text[i * char_num:char_num * (i + 1)], description_position, 50, (0, 255, 0))
-
-
-    # ウィンドウサイズを設定して画像を表示
-    cv2.namedWindow('Image with Bounding Box, Time, and Description', cv2.WINDOW_NORMAL)
-    # ウィンドウサイズを800x600に設定
-    cv2.resizeWindow('Image with Bounding Box, Time, and Description', 1400, 1200)
-    cv2.imshow('Image with Bounding Box, Time, and Description', image)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    main_loop()
